@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserView {
+public class UserRepresentation {
     private String username;
     private String fullName;
 }

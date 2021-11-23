@@ -14,19 +14,19 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class CartItem extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "session_id")
-    private ShoppingSession session;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "quantity")
     private int quantity;
 
-    public CartItem(ShoppingSession session, Product product, int quantity) {
-        this.session = session;
+    public CartItem(Cart cart, Product product, int quantity) {
+        this.cart = cart;
         this.product = product;
         this.quantity = quantity;
     }

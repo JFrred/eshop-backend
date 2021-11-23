@@ -2,6 +2,7 @@ package com.example.security;
 
 import com.example.exception.InvalidTokenException;
 import com.example.model.AccountActivationToken;
+import com.example.model.Cart;
 import com.example.model.User;
 import com.example.repository.AccountActivationTokenRepository;
 import com.example.repository.UserRepository;
@@ -62,8 +63,7 @@ public class JwtTokenService {
     }
 
     public void enableUser(String token) {
-        AccountActivationToken authToken = authTokenRepository.findAll().stream()
-                .filter(t -> t.getToken().equals(token)).findAny()
+        AccountActivationToken authToken = authTokenRepository.findByToken(token)
                 .orElseThrow(InvalidTokenException::new);
         tokenExpired(authToken);
 
@@ -71,8 +71,12 @@ public class JwtTokenService {
         if (user == null)
             throw new UsernameNotFoundException("Could not find user");
 
+        Cart cart = new Cart(user);
+
         user.setEnabled(true);
+        user.setCart(cart);
         userRepository.save(user);
+
         authToken.setModifiedAt(Instant.now());
 
         log.info("user has been enabled");
@@ -86,7 +90,7 @@ public class JwtTokenService {
             authTokenRepository.delete(authToken);
             userRepository.delete(authToken.getUser());
 
-            throw new InvalidTokenException("Token expired"); //todo: JwtTokenException
+            throw new InvalidTokenException("Token expired");
         }
     }
 

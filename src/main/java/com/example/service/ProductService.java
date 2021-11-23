@@ -1,20 +1,20 @@
 package com.example.service;
 
 import com.example.dto.ProductRequest;
-import com.example.dto.ProductView;
+import com.example.dto.ProductRepresentation;
 
 import java.util.List;
 
 public interface ProductService {
-    ProductView get(int productId);
+    ProductRepresentation get(int productId);
 
-    List<ProductView> getAll(int page, int size);
+    List<ProductRepresentation> getAll(int page, int size);
 
-    List<ProductView> getAllByUsernamePaginated(String username, int page, int size);
+    List<ProductRepresentation> getAllByUsernamePaginated(String username, int page, int size);
 
-    List<ProductView> getByCategoryPaginated(String categoryName, int page, int size);
+    List<ProductRepresentation> getByCategoryPaginated(String categoryName, int page, int size);
 
-    List<ProductView> getByNamePaginated(String productName, int page, int size);
+    List<ProductRepresentation> getByNamePaginated(String productName, int page, int size);
 
     int save(ProductRequest product);
 

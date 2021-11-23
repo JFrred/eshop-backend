@@ -25,7 +25,7 @@ import java.util.List;
 public class JwtTokenFilter extends OncePerRequestFilter {
     private static final String BEARER_HEADER = "Bearer ";
     private final List<String> excludedUrls = Arrays.asList("/auth/perform_login",
-            "/auth/perform_signup", "/auth/account-verification", "/products?name=**",
+            "/auth/perform_registration", "/auth/account-verification**", "/products?name=**",
             "/products/**", "/categories");
     private final JwtTokenService jwtTokenService;
     private final UserRepository userRepository;

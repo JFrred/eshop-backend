@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Table(name = "payment_details")
 public class PaymentDetails extends BaseEntity {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private OrderDetails orderDetails;
 

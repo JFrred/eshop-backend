@@ -11,7 +11,7 @@ import java.time.Instant;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductView {
+public class ProductRepresentation {
     private String name;
     private String category;
     private double price;

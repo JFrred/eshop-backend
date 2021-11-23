@@ -27,7 +27,7 @@ public class AuthController {
                 .body("You have been logged in");
     }
 
-    @PostMapping("/perform_signup")
+    @PostMapping("/perform_registration")
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
         authService.register(registerRequest);
         return ResponseEntity.ok("Activation email has been sent");

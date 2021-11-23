@@ -53,6 +53,11 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "is_enabled")
     private boolean enabled;
 
+    @OneToOne(mappedBy = "user",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Cart cart;
+
     @Embedded
     private Address address;
 

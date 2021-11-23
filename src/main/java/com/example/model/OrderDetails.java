@@ -8,14 +8,14 @@ import javax.persistence.*;
 @Table(name = "order_details")
 public class OrderDetails extends BaseEntity {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "total")
     private double totalPrice;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id")
     private PaymentDetails paymentDetails;
 

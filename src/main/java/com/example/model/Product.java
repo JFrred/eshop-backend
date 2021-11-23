@@ -39,7 +39,8 @@ public class Product extends BaseEntity {
     private double price;
 
     @NotNull
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
     @JoinColumn(name = "seller_id")
     private User seller;
 

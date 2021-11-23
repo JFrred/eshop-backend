@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.dto.ProductView;
+import com.example.dto.ProductRepresentation;
 import com.example.exception.ProductNotFoundException;
 import com.example.service.ProductService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,14 +33,14 @@ class ProductControllerIT {
     @MockBean
     private ProductService productService;
 
-    private ProductView productView;
-    private ProductView productView1;
+    private ProductRepresentation productRepresentation;
+    private ProductRepresentation productRepresentation1;
 
     @BeforeEach
     void setup() {
-        productView = new ProductView(
+        productRepresentation = new ProductRepresentation(
                 "product name 0", "ELECTRONICS", 65, Instant.now());
-        productView1 = new ProductView(
+        productRepresentation1 = new ProductRepresentation(
                 "product name 1", "SPORT", 123, Instant.now());
     }
 
@@ -65,8 +65,8 @@ class ProductControllerIT {
 
     }
 
-    private List<ProductView> mockedData() {
-        return List.of(productView, productView1);
+    private List<ProductRepresentation> mockedData() {
+        return List.of(productRepresentation, productRepresentation1);
     }
 
     @Test
@@ -80,7 +80,7 @@ class ProductControllerIT {
 
     @Test
     void get_withValidId_thenStatusIsOk() throws Exception {
-        given(productService.get(anyInt())).willReturn(productView);
+        given(productService.get(anyInt())).willReturn(productRepresentation);
 
         mockMvc.perform(get(PRODUCT_PATH + "/1"))
                 .andExpect(status().isOk())

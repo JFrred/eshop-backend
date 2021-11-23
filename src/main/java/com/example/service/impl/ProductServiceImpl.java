@@ -1,7 +1,7 @@
 package com.example.service.impl;
 
+import com.example.dto.ProductRepresentation;
 import com.example.dto.ProductRequest;
-import com.example.dto.ProductView;
 import com.example.exception.ProductNotFoundException;
 import com.example.model.Product;
 import com.example.mapper.ProductViewMapper;
@@ -28,21 +28,21 @@ public class ProductServiceImpl implements ProductService {
     private final AuthService authService;
 
     @Override
-    public ProductView get(int id) {
+    public ProductRepresentation get(int id) {
         return productRepository.findById(id)
                 .stream().map(productViewMapper::mapSourceToView).findAny()
                 .orElseThrow(ProductNotFoundException::new);
     }
 
     @Override
-    public List<ProductView> getAll(int page, int size) {
+    public List<ProductRepresentation> getAll(int page, int size) {
         return productRepository.findAll(PageRequest.of(page, size))
                 .stream().map(productViewMapper::mapSourceToView)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ProductView> getByNamePaginated(String productName, int page, int size) {
+    public List<ProductRepresentation> getByNamePaginated(String productName, int page, int size) {
         String trimmed = productName.trim();
 
         return productRepository.findAll(PageRequest.of(page, size))
@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductView> getAllByUsernamePaginated(String username, int page, int size) {
+    public List<ProductRepresentation> getAllByUsernamePaginated(String username, int page, int size) {
         String trimmedUsername = username.trim();
         return productRepository.findAll(PageRequest.of(page, size))
                 .filter(p -> StringUtils.containsIgnoreCase(p.getSeller().getUsername(), trimmedUsername))
@@ -61,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductView> getByCategoryPaginated(String categoryName, int page, int size) {
+    public List<ProductRepresentation> getByCategoryPaginated(String categoryName, int page, int size) {
         String trimmedUpperCaseCategory = categoryName.trim().toUpperCase();
         ProductCategory category = productViewMapper.getProductCategory(trimmedUpperCaseCategory);
 

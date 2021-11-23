@@ -1,69 +1,65 @@
 package com.example.service.impl;
 
+import com.example.dto.CartRepresentation;
+import com.example.exception.ProductNotFoundException;
+import com.example.mapper.CartMapper;
 import com.example.model.CartItem;
-import com.example.model.ShoppingSession;
-import com.example.model.User;
+import com.example.model.Cart;
+import com.example.model.Product;
 import com.example.repository.CartItemRepository;
 import com.example.repository.ProductRepository;
-import com.example.repository.ShoppingSessionRepository;
+import com.example.repository.CartRepository;
 import com.example.service.AuthService;
-import com.example.service.ShoppingSessionService;
+import com.example.service.CartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class ShoppingSessionServiceImpl implements ShoppingSessionService {
+public class CartServiceImpl implements CartService {
     private final AuthService authService;
-    private final ShoppingSessionRepository shoppingSessionRepository;
+    private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
+    private final CartMapper cartMapper;
 
     @Override
-    public ShoppingSession get() {
-        User currentUser = authService.getCurrentUser();
+    public CartRepresentation get() {
+        Cart cart = findCartByUser();
+        if (cart.getItems() == null)
+            throw new RuntimeException("Your cart is empty");
+        return cartMapper.mapCartToRepresentation(cart);
+    }
 
-        return shoppingSessionRepository.findByUser(currentUser).
-                orElseThrow(() -> new UsernameNotFoundException(
-                        "No cart for user with username=" + currentUser.getUsername()));
+    private Cart findCartByUser() {
+        return cartRepository.findByUser(authService.getCurrentUser())
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
     }
 
     @Override
-    public CartItem addItem(int productId) {
-        
-        return null;
+    @Transactional
+    public int saveCartItem(int productId) {
+        Cart cart = findCartByUser();
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException(productId));
+
+        cart.setTotalPrice(cart.getTotalPrice() + product.getPrice());
+
+        return cartItemRepository.save(new CartItem(cart, product, 1)).getId();
     }
 
     @Override
-    public void removeItem(int productId) {
+    public void deleteCartItem(int itemId) {
+        CartItem cartItem = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("No cart item with id=" + itemId));
+        Cart cart = findCartByUser();
+        cart.setTotalPrice(cart.getTotalPrice() - cartItem.getProduct().getPrice());
 
+        cartItemRepository.delete(cartItem);
     }
 
-    //    @Override
-//    public CartItem add(int userId, int productId) {
-//        ShoppingSession cart = shoppingSessionRepository.findByUserId(userId).orElseThrow(
-//                () -> new RuntimeException(String.format("User with id %d not found", userId)));
-//        Product product = productRepository.findById(productId).orElseThrow(
-//                () -> new ProductNotFoundException(productId));
-//        Optional<CartItem> cartItemOpt = cartItemRepository.findBySessionAndProductId(cart, productId);
-//
-//        if (cartItemOpt.isEmpty()) // if product is not in cart yet save new cart item else increment quantity
-//            return cartItemRepository.save(new CartItem(cart, product, 1));
-//
-//        CartItem cartItem = cartItemOpt.get();
-//        cartItem.setQuantity(cartItem.getQuantity() + 1);
-//        return cartItemRepository.save(cartItem);
-//    }
-//
-//    @Override
-//    public void remove(int userId, int productId) {
-//        ShoppingSession cart = shoppingSessionRepository.findByUserId(userId)
-//                .orElseThrow(() -> new RuntimeException(
-//                        "Could not find shopping session with userId=" + userId));
-//        CartItem cartItem = cartItemRepository.findBySessionAndProductId(cart, productId)
-//                .orElseThrow(ProductNotFoundException::new);
-//
-//        cartItemRepository.delete(cartItem);
-//    }
 }

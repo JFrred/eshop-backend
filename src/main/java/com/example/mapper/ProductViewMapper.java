@@ -1,7 +1,7 @@
 package com.example.mapper;
 
 import com.example.dto.ProductRequest;
-import com.example.dto.ProductView;
+import com.example.dto.ProductRepresentation;
 import com.example.exception.IllegalProductCategoryNameException;
 import com.example.model.Product;
 import com.example.model.User;
@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ProductViewMapper {
     @Mapping(target = "lastModified", source = "product.modifiedAt")
-    ProductView mapSourceToView(Product product);
+    ProductRepresentation mapSourceToView(Product product);
 
 
     @Mapping(target = "category", expression = "java(getProductCategory(request.getCategory()))")

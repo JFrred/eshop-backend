@@ -1,12 +1,11 @@
 package com.example.service;
 
-import com.example.model.CartItem;
-import com.example.model.ShoppingSession;
+import com.example.dto.CartRepresentation;
 
-public interface ShoppingSessionService {
-    ShoppingSession get();
+public interface CartService {
+    CartRepresentation get();
 
-    CartItem addItem(int productId);
+    int saveCartItem(int productId);
 
-    void removeItem(int productId);
+    void deleteCartItem(int productId);
 }
