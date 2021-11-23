@@ -7,10 +7,11 @@ import javax.persistence.*;
 
 @Getter
 @Entity
-@Table(name = "shopping_session")
+@Table(name = "shopping_cart")
 public class ShoppingSession extends BaseEntity {
 
-    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.REFRESH})
+    @OneToOne(cascade = {CascadeType.REMOVE, CascadeType.REFRESH},
+            fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
