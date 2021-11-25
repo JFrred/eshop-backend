@@ -13,16 +13,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ProductMgmtController {
     private final ProductService productService;
-    @Value("${server.port}")
-    private int serverPort;
 
     @PostMapping
     public ResponseEntity<String> create(@RequestBody ProductRequest productRequest) {
         int productId = productService.save(productRequest);
-        String url = "localhost:" + serverPort + "/products/" + productId;
 
-        return new ResponseEntity<>("Product has been saved with.\n" +
-                "You can find your product at this address: " + url, HttpStatus.CREATED);
+        return new ResponseEntity<>("Product has been saved with.",
+                HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

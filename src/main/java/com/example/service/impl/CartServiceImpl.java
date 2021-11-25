@@ -6,6 +6,7 @@ import com.example.mapper.CartMapper;
 import com.example.model.CartItem;
 import com.example.model.Cart;
 import com.example.model.Product;
+import com.example.model.User;
 import com.example.repository.CartItemRepository;
 import com.example.repository.ProductRepository;
 import com.example.repository.CartRepository;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.management.InvalidAttributeValueException;
 import javax.transaction.Transactional;
 
 @Slf4j
@@ -29,37 +31,60 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartRepresentation get() {
-        Cart cart = findCartByUser();
-        if (cart.getItems() == null)
-            throw new RuntimeException("Your cart is empty");
+        Cart cart = findCartByCurrentUser();
         return cartMapper.mapCartToRepresentation(cart);
     }
 
-    private Cart findCartByUser() {
-        return cartRepository.findByUser(authService.getCurrentUser())
+    private Cart findCartByCurrentUser() {
+        User currentUser = authService.getCurrentUser();
+        return cartRepository.findByUser(currentUser)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
     }
 
     @Override
     @Transactional
-    public int saveCartItem(int productId) {
-        Cart cart = findCartByUser();
+    public int saveCartItem(int productId, int quantity) {
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException(productId));
 
-        cart.setTotalPrice(cart.getTotalPrice() + product.getPrice());
+        Cart cart = findCartByCurrentUser();
+        cart.setTotalPrice(cart.getTotalPrice() + (quantity * product.getPrice()));
 
-        return cartItemRepository.save(new CartItem(cart, product, 1)).getId();
+        CartItem cartItem = new CartItem(cart, product, quantity);
+
+        return cartItemRepository.save(cartItem).getId();
     }
 
     @Override
-    public void deleteCartItem(int itemId) {
-        CartItem cartItem = cartItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("No cart item with id=" + itemId));
-        Cart cart = findCartByUser();
-        cart.setTotalPrice(cart.getTotalPrice() - cartItem.getProduct().getPrice());
+    @Transactional
+    public void deleteCartItem(int itemId, int quantity) {
+        CartItem cartItem = cartItemRepository.findById(itemId).orElseThrow(
+                () -> new RuntimeException("No cart item with id=" + itemId));
 
-        cartItemRepository.delete(cartItem);
+        if (cartItem.getQuantity() < quantity)
+            throw new IllegalArgumentException(
+                    "Cart item quantity is lower then supposed quantity to delete");
+
+        for (int i = 0; i < quantity; i++) {
+            cartItem.setQuantity(cartItem.getQuantity() - 1);
+            if (cartItem.getQuantity() == 0) {
+                cartItemRepository.delete(cartItem);
+                return;
+            }
+        }
+
+        double cartItemsTotalPrice = cartItem.getProduct().getPrice() * quantity;
+        Cart cart = findCartByCurrentUser();
+        cart.setTotalPrice(cart.getTotalPrice() - cartItemsTotalPrice);
     }
 
+
+    @Override
+    @Transactional
+    public void deleteAllCartItems() {
+        Cart cart = findCartByCurrentUser();
+        cart.setTotalPrice(0);
+
+        cartItemRepository.deleteAllByCart(cart);
+    }
 }
