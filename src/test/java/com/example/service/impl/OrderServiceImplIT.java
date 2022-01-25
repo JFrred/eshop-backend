@@ -1,4 +1,4 @@
-package com.example.controller;
+package com.example.service.impl;
 
 import com.example.dto.OrderDetailsResponse;
 import com.example.dto.OrderItemRequest;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class OrderControllerIT {
+public class OrderServiceImplIT {
     private final String PATH = "/api/orders";
 
     @Autowired

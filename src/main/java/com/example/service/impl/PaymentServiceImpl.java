@@ -1,6 +1,7 @@
 package com.example.service.impl;
 
 import com.example.dto.PaymentRepresentation;
+import com.example.exception.PaymentNotFound;
 import com.example.mapper.PaymentMapper;
 import com.example.repository.PaymentDetailsRepository;
 import com.example.service.PaymentService;
@@ -16,6 +17,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentRepresentation get(int id) {
         return paymentMapper.mapSourceToDto(repository.findById(id).orElseThrow(
-                () -> new RuntimeException("Could not find payment details with id = " + id)));
+                () -> new PaymentNotFound("Could not find payment details with id = " + id)));
     }
 }
