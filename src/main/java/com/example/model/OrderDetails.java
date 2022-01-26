@@ -20,21 +20,22 @@ public class OrderDetails extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "total")
+    private double totalPrice;
+
+    @Embedded
+    private BillingAddress billingAddress;
+
     @OneToMany(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             mappedBy = "order")
     private List<OrderItem> orderItems;
-
-    @Column(name = "total")
-    private double totalPrice;
 
     @OneToOne(fetch = FetchType.LAZY,
             cascade = CascadeType.ALL,
             mappedBy = "orderDetails")
     private PaymentDetails paymentDetails;
 
-    @Embedded
-    private BillingAddress billingAddress;
 
     public OrderDetails(User user) {
         this.user = user;

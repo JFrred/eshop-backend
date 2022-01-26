@@ -91,6 +91,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void validatePaymentType(OrderRequest request) {
+        if (request == null)
+            throw new IllegalArgumentException("Order request must not be null");
         if (request.getPaymentType() == null)
             throw new IllegalArgumentException("Payment type must not be null");
         try {
