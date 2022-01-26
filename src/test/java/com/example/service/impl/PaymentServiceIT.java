@@ -1,4 +1,4 @@
-package com.example.controller;
+package com.example.service.impl;
 
 import com.example.dto.PaymentRepresentation;
 import com.example.model.enums.PaymentType;
@@ -22,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Sql(value = "/db/populateDb.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class PaymentControllerTest {
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class PaymentServiceIT {
 
     @Autowired
     private MockMvc mockMvc;

@@ -43,7 +43,6 @@ public class OrderServiceImplIT {
     String token;
 
     OrderRequest orderRequest;
-    double totalPrice;
 
     @BeforeEach
     public void setup() {

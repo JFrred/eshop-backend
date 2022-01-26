@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ProductMgmtControllerIT {
+class ProductMgmtControllerTest {
     private static final String PATH = "/api/mgmt/products";
     private static final String PATH_WITH_ID = PATH + "/{id}";
 

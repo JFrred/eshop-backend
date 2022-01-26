@@ -10,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ProductMgmtServiceImplTest {
+class ProductMgmtServiceImplIT {
 
     @Test
     void save() {
