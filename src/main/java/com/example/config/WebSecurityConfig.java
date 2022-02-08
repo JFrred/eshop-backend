@@ -1,6 +1,7 @@
-package com.example.security;
+package com.example.config;
 
 import com.example.repository.UserRepository;
+import com.example.security.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
