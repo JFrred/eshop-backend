@@ -1,13 +1,22 @@
 package com.example.dto;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = @JsonCreator(mode = JsonCreator.Mode.PROPERTIES))
 public class LoginRequest {
-    private String username;
-    private char[] password;
+
+    @NotNull(message = "Username must not be null")
+    @NotEmpty(message = "Username must not be empty")
+    private final String username;
+
+    @NotNull(message = "Password must not be null")
+    @Size(min = 6, max = 30, message = "Password length must be between 6 and 30")
+    private final char[] password;
 }

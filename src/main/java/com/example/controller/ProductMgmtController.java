@@ -2,7 +2,6 @@ package com.example.controller;
 
 import com.example.dto.ProductRequest;
 import com.example.service.ProductMgmtService;
-import com.example.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

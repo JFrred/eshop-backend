@@ -49,7 +49,7 @@ class AuthControllerTest {
 
     @BeforeEach
     void setup() {
-        request = new LoginRequest("username", "pass".toCharArray());
+        request = new LoginRequest("username", "password1234".toCharArray());
     }
 
     @Test
