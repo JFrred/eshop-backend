@@ -3,6 +3,7 @@ package com.example.model;
 import com.example.model.abstracts.BaseEntity;
 import com.example.model.embeddable.Address;
 import com.example.model.enums.Role;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +13,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity implements UserDetails {
@@ -59,6 +61,12 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "is_enabled")
     private boolean enabled;
 
+    @Column(name = "is_locked")
+    private boolean locked;
+
+    @Column(name = "is_credentials_non_expired")
+    private boolean credentialsNonExpired;
+
     @Embedded
     private Address address;
 
@@ -86,11 +94,11 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return enabled;
+        return locked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return enabled;
+        return credentialsNonExpired;
     }
 }

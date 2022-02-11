@@ -1,14 +1,14 @@
 package com.example.model.enums;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public enum ShippingType {
     SELF_PICKUP(0),
     PICKUP_AT_THE_POINT(10),
     DELIVERY_BY_COURIER(15);
 
-    private double price;
+    private final double price;
 }
