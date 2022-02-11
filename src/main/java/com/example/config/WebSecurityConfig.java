@@ -29,7 +29,7 @@ import static java.util.Collections.singletonList;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtTokenFilter jwtTokenFilter;
-    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -53,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterAfter(
                         jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(e -> e
-                        .authenticationEntryPoint(authenticationEntryPoint))
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .formLogin(l -> l
                         .defaultSuccessUrl("/")
                         .loginProcessingUrl("/perform_login")

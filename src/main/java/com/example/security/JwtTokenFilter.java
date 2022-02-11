@@ -2,7 +2,6 @@ package com.example.security;
 
 import com.example.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,19 +15,25 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
     private static final String BEARER_HEADER = "Bearer ";
-    private final List<String> excludedUrls = Arrays.asList("/auth/perform_login",
+    private static final List<String> excludedUrls = Arrays.asList("/auth/perform_login",
             "/auth/perform_signup", "/auth/account-verification", "/products?name=**",
             "/products/**", "/categories");
+    private final static List<AntPathRequestMatcher> excludedPathRequestMatcher = new ArrayList<>();
+
+    static {
+        excludedUrls.forEach(url -> excludedPathRequestMatcher.add(new AntPathRequestMatcher(url)));
+    }
+
     private final JwtTokenService jwtTokenService;
     private final UserRepository userRepository;
 
@@ -40,7 +45,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         String token = getTokenFromRequest(request);
 
-        if (jwtTokenService.validate(token)) {
+        if (jwtTokenService.isValid(token)) {
             UserDetails userDetails = userRepository
                     .findByUsername(jwtTokenService.getUsername(token))
                     .orElseThrow();
@@ -59,16 +64,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return excludedUrls.stream().anyMatch(
-                url -> new AntPathRequestMatcher(url).matches(request));
+        return excludedPathRequestMatcher.stream().anyMatch(
+                url -> url.matches(request));
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String token = "";
+        String header = Optional.of(request.getHeader(HttpHeaders.AUTHORIZATION))
+                .orElseThrow(() -> new IllegalArgumentException("No Token Provided"));
 
-        if (header != null && header.startsWith(BEARER_HEADER))
-            token = header.replace(BEARER_HEADER, "").trim();
-        return token;
+        if (!header.startsWith(BEARER_HEADER))
+            return "";
+
+        return header.replace(BEARER_HEADER, "").trim();
     }
+
 }

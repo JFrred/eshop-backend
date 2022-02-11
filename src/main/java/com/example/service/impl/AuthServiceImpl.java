@@ -4,25 +4,27 @@ import com.example.dto.AuthenticationResponse;
 import com.example.dto.LoginRequest;
 import com.example.dto.RegisterRequest;
 import com.example.mapper.UserViewMapper;
-import com.example.model.*;
+import com.example.model.Cart;
+import com.example.model.User;
 import com.example.repository.CartRepository;
 import com.example.repository.UserRepository;
 import com.example.security.JwtTokenService;
 import com.example.service.AuthService;
 import com.example.service.MessageSender;
+import com.example.service.impl.EmailSender.ActivationEmail;
 import com.example.validation.RegisterValidator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.nio.CharBuffer;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -43,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
         cartRepository.save(new Cart(user));
 
         String token = jwtTokenService.generateAccountActivationToken(user);
-        messageSender.sendMessage(new EmailSender.ActivationEmail(user.getEmail(), token));
+        messageSender.sendMessage(new ActivationEmail(user.getEmail(), token));
 
         return token;
     }
@@ -66,8 +68,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User getCurrentUser() {
-        return (User) SecurityContextHolder.getContext()
+        final UserDetails principal = (UserDetails) SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
+        return userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "Couldn't find user " + principal.getUsername()));
     }
 
 }
