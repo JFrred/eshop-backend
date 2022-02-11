@@ -7,6 +7,7 @@ import com.example.model.Product;
 import com.example.model.User;
 import com.example.model.enums.ProductCategory;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -15,8 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class ProductRepresentationMapperTest {
+
     @Autowired
     private ProductViewMapperImpl mapper;
+
+    @Mock
+    private User user;
 
     @Test
     void mapSourceToView() {
@@ -32,7 +37,6 @@ class ProductRepresentationMapperTest {
     void mapProductDtoToSource() {
         ProductRequest productRequest = new ProductRequest("prod","desc",
                 "E_BIKE","imgUrl", 1234);
-        User user = new User();
 
         Product product = mapper.mapProductDtoToSource(productRequest, user);
 
@@ -57,11 +61,5 @@ class ProductRepresentationMapperTest {
 
         assertThat(exception).isInstanceOf(IllegalProductCategoryNameException.class);
     }
-
-//    @Test
-//    void getProductCategory_ShouldFailWithException() {
-//        assertThrows(IllegalProductCategoryNameException.class,
-//                () -> mapper.getProductCategory("invalid_category_name"));
-//    }
 
 }

@@ -3,33 +3,29 @@ package com.example.service.impl;
 import com.example.dto.OrderItemRequest;
 import com.example.dto.OrderRequest;
 import com.example.mapper.OrderMapper;
-import com.example.model.Cart;
-import com.example.model.OrderDetails;
-import com.example.model.Product;
-import com.example.model.User;
 import com.example.model.enums.PaymentType;
-import com.example.model.enums.ProductCategory;
 import com.example.repository.*;
 import com.example.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
 
+@ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
     @Mock
     private OrderDetailsRepository orderDetailsRepository;
     @Mock
     private OrderItemRepository orderItemRepository;
+    @Mock
+    private PaymentDetailsRepository paymentDetailsRepository;
     @Mock
     private ProductRepository productRepository;
     @Mock
@@ -40,31 +36,13 @@ class OrderServiceImplTest {
     private AuthService authService;
     @Mock
     private OrderMapper orderMapper;
-    @InjectMocks
-    private OrderServiceImpl orderService;
 
-    private OrderDetails orderDetails;
-    private Cart cart;
-    private Product product1;
-    private Product product2;
+    private OrderServiceImpl orderService;
 
     @BeforeEach
     void setup() {
-        MockitoAnnotations.openMocks(this);
-
-        User user = new User();
-        user.setUsername("testUser");
-        cart = new Cart(user, 0, null);
-        product1 = new Product("bike1", "road bike", ProductCategory.ROAD, 1000);
-        product2 = new Product("bike2", "mountain bike", ProductCategory.MOUNTAIN, 2000);
-        orderDetails = new OrderDetails(user);
-//        CartItem cartItem1 = new CartItem(cart, product1, 1);
-
-        given(authService.getCurrentUser()).willReturn(user);
-        given(cartRepository.findByUser(user)).willReturn(Optional.of(cart));
-//        given(orderDetailsRepository.save(any())).willReturn(orderDetails);
-        given(productRepository.findById(1)).willReturn(Optional.of(product1));
-        given(productRepository.findById(2)).willReturn(Optional.of(product2));
+        orderService = new OrderServiceImpl(orderDetailsRepository, orderItemRepository, paymentDetailsRepository,
+                productRepository, cartRepository, cartItemRepository, authService, orderMapper);
     }
 
     @Test
@@ -115,19 +93,6 @@ class OrderServiceImplTest {
         String expectedMessage = "Invalid payment type";
         String actualMessage = exception.getMessage();
         assertThat(actualMessage).containsIgnoringCase(expectedMessage);
-    }
-
-    @Test
-    void orderCartItems_shouldSucceed() {
-//        OrderItemRequest orderItemRequest1 = new OrderItemRequest(1, 1);
-//        OrderItemRequest orderItemRequest2 = new OrderItemRequest(2, 2);
-//        OrderRequest orderRequest = new OrderRequest(List.of(orderItemRequest1, orderItemRequest2),
-//                "fullname","email", "city", "street",
-//                "12-345", PaymentType.TRANSFER.getValue());
-//        given(cartItemRepository.findById(anyInt())).willReturn(Optional.of(new CartItem(cart, product1, 1)));
-//        doNothing().when(cartItemRepository).deleteByCartIdAndProductId(anyInt(), anyInt());
-//
-//        assertDoesNotThrow(() -> orderService.orderCartItems(orderRequest));
     }
 
 }

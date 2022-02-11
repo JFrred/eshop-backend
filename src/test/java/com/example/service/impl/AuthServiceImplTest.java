@@ -12,9 +12,10 @@ import com.example.service.MessageSender;
 import com.example.validation.RegisterValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.AuthenticationManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,37 +23,41 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class AuthServiceImplTest {
     @Mock
-    private JwtTokenService jwtTokenService;
-    @Mock
     private UserRepository userRepository;
+    @Mock
+    private CartRepository cartRepository;
     @Mock
     private MessageSender messageSender;
     @Mock
     private RegisterValidator registerValidator;
     @Mock
-    private UserViewMapper userViewMapper;
+    private AuthenticationManager authenticationManager;
     @Mock
-    private CartRepository cartRepository;
+    private JwtTokenService jwtTokenService;
+    @Mock
+    private UserViewMapper userViewMapper;
 
-    @InjectMocks
-    private AuthServiceImpl service;
+    private AuthServiceImpl authService;
+
+    @Mock
+    private User user;
 
     @BeforeEach
     void setup() {
-        MockitoAnnotations.openMocks(this);
+        authService = new AuthServiceImpl(userRepository, cartRepository, messageSender,
+                registerValidator, authenticationManager, jwtTokenService, userViewMapper);
     }
 
     @Test
     void registerWithValidRequest_ThenOK() {
         RegisterRequest request = new RegisterRequest();
-        User user = new User();
         given(userViewMapper.mapRegisterRequestToUser(request)).willReturn(user);
         given(userRepository.save(any())).willReturn(user);
-        given(jwtTokenService.generateAccessToken(any())).willReturn("test_access_token");
 
-        service.register(request);
+        authService.register(request);
 
         verify(registerValidator).validateRequest(request);
         verify(userViewMapper).mapRegisterRequestToUser(request);
@@ -66,7 +71,7 @@ class AuthServiceImplTest {
         doThrow(UsernameTakenException.class).when(registerValidator).validateRequest(any());
 
         Exception exception = assertThrows(UsernameTakenException.class,
-                () -> service.register(request));
+                () -> authService.register(request));
 
         assertThat(exception).isInstanceOf(UsernameTakenException.class);
         verify(registerValidator).validateRequest(request);
@@ -82,7 +87,7 @@ class AuthServiceImplTest {
         doThrow(InvalidPasswordException.class).when(registerValidator).validateRequest(any());
 
         Exception exception = assertThrows(InvalidPasswordException.class,
-                () -> service.register(request));
+                () -> authService.register(request));
 
         assertThat(exception).isInstanceOf(InvalidPasswordException.class);
         verify(registerValidator).validateRequest(request);

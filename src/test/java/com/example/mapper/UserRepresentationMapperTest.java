@@ -3,6 +3,8 @@ package com.example.mapper;
 import com.example.dto.RegisterRequest;
 import com.example.dto.UserRepresentation;
 import com.example.model.User;
+import com.example.model.embeddable.Address;
+import com.example.model.enums.Role;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,10 +31,8 @@ class UserRepresentationMapperTest {
 
     @Test
     void testMapToView() {
-        User user = new User();
-        user.setUsername("bob_ross");
-        user.setFirstName("Bob");
-        user.setLastName("Ross");
+        User user = new User("bob_ross", "password", "Bob", "Ross", "bob@ross.test",
+                "1234-1234-1234-1234", Role.USER, new Address());
 
         UserRepresentation actual = mapper.mapToView(user);
 

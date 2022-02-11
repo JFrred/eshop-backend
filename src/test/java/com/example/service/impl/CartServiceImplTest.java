@@ -1,5 +1,6 @@
 package com.example.service.impl;
 
+import com.example.mapper.CartMapper;
 import com.example.model.Cart;
 import com.example.model.CartItem;
 import com.example.model.Product;
@@ -11,52 +12,56 @@ import com.example.repository.ProductRepository;
 import com.example.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 
+@ExtendWith(MockitoExtension.class)
 class CartServiceImplTest {
-    @Mock
-    private CartRepository sessionRepository;
+
     @Mock
     private CartItemRepository cartItemRepository;
     @Mock
     private ProductRepository productRepository;
     @Mock
     private AuthService authService;
+    @Mock
+    private CartMapper cartMapper;
+    @Mock
+    private CartRepository cartRepository;
 
-    @InjectMocks
     private CartServiceImpl cartService;
+
+    @Mock
+    private User user;
 
     private Cart cart;
     private Product product;
     private CartItem cartItem;
-    private User user;
 
     @BeforeEach
     void setup() {
-        MockitoAnnotations.openMocks(this);
+        cartService = new CartServiceImpl(authService, cartRepository,
+                cartItemRepository, productRepository, cartMapper);
 
         product = new Product("test product", "test description", ProductCategory.ROAD, 1);
-        user = new User();
         cart = new Cart(user);
         cart.setTotalPrice(100);
         cartItem = new CartItem(cart, product, 1);
-        given(sessionRepository.findByUser(any())).willReturn(Optional.of(cart));
-        given(productRepository.findById(1)).willReturn(Optional.of(product));
-        given(cartItemRepository.save(any())).willReturn(cartItem);
-        given(cartItemRepository.findByCartAndProductId(cart,1)).willReturn(Optional.of(cartItem));
+        given(cartRepository.findByUser(any())).willReturn(Optional.of(cart));
     }
 
     @Test
     void saveCartItem_ShouldSucceed() {
+        given(productRepository.findById(1)).willReturn(Optional.of(product));
         double totalPriceBefore = cart.getTotalPrice();
 
         cartService.saveCartItem(1, 2);
@@ -69,6 +74,7 @@ class CartServiceImplTest {
 
     @Test
     void deleteCartItem_ShouldSucceed() {
+        given(cartItemRepository.findByCartAndProductId(any(), anyInt())).willReturn(Optional.of(cartItem));
         cartItem.setQuantity(10);
         double totalPriceBefore = cart.getTotalPrice();
 
@@ -84,9 +90,8 @@ class CartServiceImplTest {
     @Test
     void deleteCartItem_WithQuantityToDeleteHigherThenTotalItemQuantity_ShouldThrowIAE() {
         cartItem.setQuantity(5);
-        given(cartItemRepository.findById(1)).willReturn(Optional.of(cartItem));
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(RuntimeException.class, () ->
                 cartService.deleteCartItem(1, 10));
     }
 

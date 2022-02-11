@@ -9,6 +9,7 @@ import com.example.model.User;
 import com.example.model.enums.ProductCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,8 +19,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class CartMapperTest {
+
     @Autowired
     private CartMapperImpl cartMapper;
+
+    @Mock
+    private User user;
 
     private Cart cart;
     private Product product;
@@ -29,7 +34,7 @@ class CartMapperTest {
     void setup() {
         product = new Product("pinarello dogma", "dogma f12", ProductCategory.ROAD, 9999);
         cartItem = new CartItem(cart, product, 2);
-        cart = new Cart(new User(), 10, List.of(cartItem, cartItem));
+        cart = new Cart(user, 10, List.of(cartItem, cartItem));
     }
 
     @Test
