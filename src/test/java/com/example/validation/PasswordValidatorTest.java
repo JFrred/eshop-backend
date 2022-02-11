@@ -16,8 +16,8 @@ class PasswordValidatorTest {
 
         String message = "Should not throw any exception, because password is valid";
 
-        assertDoesNotThrow(() -> validator.isValid(valid0, valid0), message);
-        assertDoesNotThrow(() -> validator.isValid(valid1, valid1), message);
+        assertDoesNotThrow(() -> validator.validate(valid0, valid0), message);
+        assertDoesNotThrow(() -> validator.validate(valid1, valid1), message);
     }
 
     @Test
@@ -25,7 +25,7 @@ class PasswordValidatorTest {
         char[] tooShort = "Ab.12".toCharArray();
 
         Exception exception = assertThrows(InvalidPasswordException.class,
-                () -> validator.isValid(tooShort, tooShort),
+                () -> validator.validate(tooShort, tooShort),
                 "Should throw InvalidPasswordException, because password is too short");
 
         String actualMessage = exception.getMessage();
@@ -39,7 +39,7 @@ class PasswordValidatorTest {
         char[] withSpace = "Pass word1.".toCharArray();
 
         Exception exception = assertThrows(InvalidPasswordException.class,
-                () -> validator.isValid(withSpace, withSpace),
+                () -> validator.validate(withSpace, withSpace),
                 "Should throw InvalidPasswordException, because password contains spaces");
         String actualMessage = exception.getMessage();
         String expectedMessage = "Password must not contain any spaces";
@@ -52,7 +52,7 @@ class PasswordValidatorTest {
         char[] noDigit = "PASS.word".toCharArray();
 
         Exception exception = assertThrows(InvalidPasswordException.class,
-                () -> validator.isValid(noDigit, noDigit),
+                () -> validator.validate(noDigit, noDigit),
                 "Should throw InvalidPasswordException, because password does not contain any digit");
         String actualMessage = exception.getMessage();
         String expectedMessage = "Password must consist of at least one digit";
@@ -65,7 +65,7 @@ class PasswordValidatorTest {
         char[] noLowerCase = "PASS.WORD1".toCharArray();
 
         Exception exception = assertThrows(InvalidPasswordException.class,
-                () -> validator.isValid(noLowerCase, noLowerCase),
+                () -> validator.validate(noLowerCase, noLowerCase),
                 "Should throw InvalidPasswordException, because password does not contain any lower case letter");
         String actualMessage = exception.getMessage();
         String expectedMessage = "Password must consist of at least one lower case letter";
@@ -78,7 +78,7 @@ class PasswordValidatorTest {
         char[] noUpperCase = "pass.word1".toCharArray();
 
         Exception exception = assertThrows(InvalidPasswordException.class,
-                () -> validator.isValid(noUpperCase, noUpperCase),
+                () -> validator.validate(noUpperCase, noUpperCase),
                 "Should throw InvalidPasswordException, because password does not contain any upper case letter");
         String actualMessage = exception.getMessage();
         String expectedMessage = "Password must consist of at least one upper case letter";
@@ -91,7 +91,7 @@ class PasswordValidatorTest {
         char[] noSpecialChar = "Password1".toCharArray();
 
         Exception exception = assertThrows(InvalidPasswordException.class,
-                () -> validator.isValid(noSpecialChar, noSpecialChar),
+                () -> validator.validate(noSpecialChar, noSpecialChar),
                 "Should throw InvalidPasswordException, because password does not contain any special character");
         String actualMessage = exception.getMessage();
         String expectedMessage = "Password must contain at least one special character";
@@ -105,7 +105,7 @@ class PasswordValidatorTest {
         char[] valid1 = "Xyz+987".toCharArray();
 
         Exception exception = assertThrows(InvalidPasswordException.class,
-                () -> validator.isValid(valid0, valid1),
+                () -> validator.validate(valid0, valid1),
                 "Should throw InvalidPasswordException, because passwords are not the same");
         String actualMessage = exception.getMessage();
         String expectedMessage = "Passwords are not the same";

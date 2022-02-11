@@ -5,9 +5,9 @@ import com.example.exception.InvalidAddressEmailException;
 import com.example.exception.UsernameTakenException;
 import com.example.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class RegisterValidator {
     private final UserRepository userRepository;
@@ -17,7 +17,7 @@ public class RegisterValidator {
         if (isUsernameTaken(registerRequest.getUsername()))
             throw new UsernameTakenException();
 
-        passwordValidator.isValid(registerRequest.getPassword(),
+        passwordValidator.validate(registerRequest.getPassword(),
                 registerRequest.getConfirmPassword());
 
         if (isAddressEmailTaken(registerRequest.getEmail()))

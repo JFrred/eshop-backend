@@ -8,7 +8,7 @@ import static java.lang.Character.*;
 @Component
 public class PasswordValidator {
 
-    public void isValid(char[] password, char[] confirmPassword) {
+    public void validate(char[] password, char[] confirmPassword) {
         containsDigit(password);
         containsLowerCaseLetter(password);
         containsUpperCaseLetter(password);
