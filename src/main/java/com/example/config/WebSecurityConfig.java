@@ -1,6 +1,6 @@
 package com.example.config;
 
-import com.example.repository.UserRepository;
+import com.example.security.JwtAuthenticationEntryPoint;
 import com.example.security.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
@@ -22,16 +22,15 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.servlet.http.HttpServletResponse;
-
 import static java.util.Collections.singletonList;
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    private final UserRepository userRepository;
     private final JwtTokenFilter jwtTokenFilter;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private final UserDetailsService userDetailsService;
 
     @Override
     @Bean
@@ -48,18 +47,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement(s -> s
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeRequests(r -> r
-                        .antMatchers("/api/mgmt/**").hasRole("ADMIN")
-                        .antMatchers("/api/**").authenticated()
+                        .mvcMatchers("/api/mgmt/**").hasRole("ADMIN")
+                        .mvcMatchers("/api/**").authenticated()
                         .anyRequest().permitAll())
                 .addFilterAfter(
                         jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(e -> e
-                        .authenticationEntryPoint((request, response, ex) -> {
-                            String authHeader = request.getHeader("Authorization");
-
-                            if (authHeader == null || authHeader.isEmpty())
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
-                        }))
+                        .authenticationEntryPoint(authenticationEntryPoint))
                 .formLogin(l -> l
                         .defaultSuccessUrl("/")
                         .loginProcessingUrl("/perform_login")
@@ -76,11 +70,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(
-                        username -> userRepository.findByUsername(username).orElseThrow(
-                                () -> new UsernameNotFoundException(
-                                        String.format("User: %s, not found", username)))
-                )
+        auth.userDetailsService(userDetailsService)
                 .passwordEncoder(passwordEncoder());
     }
 
