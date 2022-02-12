@@ -15,8 +15,8 @@ import com.example.service.AuthService;
 import com.example.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +34,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public OrderViewResponse getAll() {
         User currentUser = authService.getCurrentUser();
 
@@ -44,8 +45,10 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderDetailsRepresentation getById(int id) {
         User currentUser = authService.getCurrentUser();
+
         return orderDetailsRepository.findOrderDetailsByUserAndId(currentUser, id)
                 .map(orderMapper::mapDetailsToRepresentation).orElseThrow(
                         () -> new RuntimeException("Could not find order details with id = " + id)
