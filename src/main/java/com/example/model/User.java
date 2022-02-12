@@ -29,7 +29,7 @@ public class User extends BaseEntity implements UserDetails {
     private String username;
 
     @NotEmpty(message = "Password must not be empty")
-    @Size(min = 6, max = 30, message = "Password must be between 6 and 30 characters")
+    @Min(value = 6, message = "Password must be at least 6")
     @Column(name = "password")
     private String password;
 
