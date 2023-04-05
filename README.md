@@ -11,7 +11,7 @@
   <p align="center">
    Backend for online bike shop build with <a href="https://spring.io/guides/gs/spring-boot/">Spring Boot</a>
     <br />
-    <a href="https://github.com/JFrred/eshop-backend"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/qloqloq/eshop-backend"><strong>Explore the docs »</strong></a>
     <br />
     <br />
 
@@ -45,7 +45,7 @@
 This is my first more extensive project build from scratch by myself. Main goal of this repo was to ground my knowledge about
 Spring Boot, SQL and security. For now project is done with basic functionality and won't be developed for some time.
 You will find GUI and demo upon 
-this <a href="https://github.com/JFrred/eshop-frontend-angular"> link </a>.
+this <a href="https://github.com/qloqloq/eshop-frontend-angular"> link </a>.
 
 ### Built With
 
@@ -66,7 +66,7 @@ using [Maven](https://spring.io/guides/gs/maven/). You can build a jar file and 
 work just as well with Java 8, 11).
 
   ```sh
-git clone https://github.com/JFrred/bike-shop-spring.git
+git clone https://github.com/qloqloq/bike-shop-spring.git
 cd bike-shop-spring
 ./mvnw package
 java -jar target/*.jar
